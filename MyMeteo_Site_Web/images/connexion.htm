@@ -1,0 +1,121 @@
+<?php
+session_start(); // début de session
+
+// Paramètres de connexion
+$hostname= "localhost"; // nom ou ip de votre serveur
+$database = ""; // nom de votre base de données
+$username= "root"; // nom d'utilisateur (root par défaut) 
+$password= ""; // mot de passe
+$db = mysql_pconnect($hostname, $username, $password) or trigger_error(mysql_error(),E_USER_ERROR); 
+
+
+if (isset($_POST['login'])){ // execution uniquement apres envoi du formulaire (test si la variable POST existe)
+	$login = addslashes($_POST['login']); // mise en variable du nom d'utilisateur
+	$pass = addslashes(($_POST['pass'])); // mise en variable du mot de passe
+	
+// requete sur la table administrateurs (on récupère les infos de la personne)
+mysql_select_db($database, $db);
+$verif_query=sprintf("SELECT * FROM ta_table WHERE login='$login' AND password='$pass'"); 
+$verif = mysql_query($verif_query, $db) or die(mysql_error());
+$row_verif = mysql_fetch_assoc($verif);
+$admin = mysql_num_rows($verif);
+
+	if ($admin) {	// On test s'il y a un utilisateur correspondant
+		    session_register("authentification"); // enregistrement de la session
+		
+		// déclaration des variables de session
+		
+		$_SESSION['nom'] = $row_verif['nom']; // Son nom
+		$_SESSION['login'] = $row_verif['login']; // Son Login
+		
+		
+		header("Location:espaceadmin.php"); // redirection si OK
+		
+		
+	}
+	else {
+		header("Location:connectadmin.php?erreur=login"); // redirection si utilisateur non reconnu
+		
+		
+	}
+}
+
+
+// Gestion de la  déconnexion
+if(isset($_GET['erreur']) && $_GET['erreur'] == 'logout'){ // Test sur les paramètres d'URL qui permettront d'identifier un contexte de déconnexion
+	$nom = $_SESSION['nom']; // On garde le prénom en variable pour dire au revoir 
+	session_unset("authentification");
+	header("Location:connectadmin.php?erreur=delog&nom=$nom");
+	
+	
+}
+?>
+
+
+
+<!DOCTYPE html>
+<head>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<meta name="author" content="BRUNET Florian - GALISSI Thomas" />
+	<title>MyMeteo - Connexion</title>
+	<meta name="keywords" content="Meteo" />
+	<meta name="description" content="Consultation de station météo personnelle" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="shortcut icon" type="image/x-icon" href="images/miniLogo.ico" />
+</head>
+
+<body bgcolor="#64748B">
+	<div class="rectangleTitre1"></br>
+		<a href="accueil.html"> <img src="images/logoTerre.png" alt="Logo"/></a>
+		<h1>MyMeteo - Zone de connexion</h1>
+		
+		<div class="menu" align="center">
+			<ul>
+				<a href="accueil.html"> <li class="bouton">Accueil</li></a>
+				<a> <li class="boutonActuel">Connexion</li></a>
+				<a href="creercompte.htm"> <li class="bouton">Nouveau compte</li></a>
+				<a href="cyclique.php"> <li class="bouton">Test</li></a>
+				<a href="http://www.mymeteo.xoo.it"> <li class="bouton">Forum</li></a>
+			</ul>
+		</div>
+	</div>
+	</br>
+		<form action="" method="post" name="connect">
+			<!--<p align="center" class="titre"><strong>Connectez-vous à votre compte MyMeteo</strong></p>
+			<p align="center" class="title">
+			<?php if(isset($_GET['erreur']) && ($_GET['erreur'] == "login")) { // Affiche l'erreur  ?>
+			<strong class="erreur"><font color="#cc0000">Echec d'authentification : identifiant ou mot de passe incorrect</font></strong>
+			<?php } ?>
+			<?php if(isset($_GET['erreur']) && ($_GET['erreur'] == "delog")) { // Affiche l'erreur ?>
+			<strong class="reussite"><font color="#00cc00">D&eacute;connexion r&eacute;ussie... A bient&ocirc;t </font><?php echo $_GET['nom'];?> !</strong>
+			<?php } ?>
+			<?php if(isset($_GET['erreur']) && ($_GET['erreur'] == "intru")) { // Affiche l'erreur ?>
+			<strong class="erreur"><font color="#cc0000">Echec d'authentification !!! > Aucune session n'est ouverte ou vous n'avez pas les droits pour afficher cette page</font></strong>
+			<?php } ?>u
+			</p> -->
+			
+			<div id="form" class="connexion" align="center">
+				<p> <input name="login" type="text" id="login" placeholder="Nom d'utilisateur"></p>
+				<p> <input name="pass" type="password" id="pass" placeholder="Mot de passe"></p>
+				<p> <input class="boutonenvoyer" type="submit" name="Submit" value="Se connecter"></p>
+			</div>
+			
+			<!--<table width="200"  border="0" align="center" cellpadding="10" cellspacing="0" bgcolor="#0077ff" class="connexion">
+				<tr align="center">
+					<td><input name="login" type="text" id="login"></td>
+				</tr>
+				<tr align="center">
+					<td><input name="pass" type="password" id="pass"></td>
+				</tr>
+				<tr>
+					<td align="center">
+						<input class="boutonenvoyer" type="submit" name="Submit" value="Se connecter">
+					</td>
+				</tr>
+			</table>-->
+			
+		</form>
+	</div>
+</body>
+
+</html>
