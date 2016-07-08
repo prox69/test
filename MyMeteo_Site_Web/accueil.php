@@ -9,7 +9,7 @@ if (isset($_SESSION['pseudo'])) { // Si le membre est connecté
 <html>
 	<head>
 		<meta charset="utf-8"/>
-		<title>MyMeteo - Station meteo perso</title>
+		<title>MyMeteo - Station meteo perso ooooo</title>
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		<meta name="author" content="BRUNET Florian - GALISSI Thomas" />
 		<meta name="keywords" content="Meteo" />
